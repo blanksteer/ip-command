@@ -1,7 +1,7 @@
 use std::env;
+use std::process;
 use std::thread;
 use std::time::Duration;
-use std::process;
 
 fn main() {
     println!("{}", process::id());

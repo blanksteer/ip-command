@@ -126,7 +126,9 @@ impl<'l> IpNetNamespaceCommand<'l> {
         let mut args: Vec<String> =
             vec!["netns".into(), "exec".into(), network_namespace_name.into()];
         args.append(&mut Vec::from(command_and_args));
-        self.ip_command.command_with_streaming_output(&args, false).await
+        self.ip_command
+            .command_with_streaming_output(&args, false)
+            .await
     }
 
     /// Report as network namespace names are added and deleted.
@@ -200,17 +202,20 @@ mod tests {
 
         let (pid_sender, pid_receiver) = channel::<u32>();
         let manifest_path = env::var("CARGO_MANIFEST_DIR").unwrap();
-        let test_binary = manifest_path + "/target/debug/namespaced_process".into();
+        let test_binary = manifest_path + "/target/debug/namespaced_process";
 
         let client = IpCommand::new().unwrap();
         client.netns().add(test_namespace).await.unwrap();
 
         let exec_client = client.clone();
         tokio::spawn(async move {
-            let mut console_stream = exec_client.netns().exec(test_namespace, &[test_binary, "5".into()]).await.unwrap();
-            while let Some(Ok(next_line)) = console_stream.next().await {
+            let mut console_stream = exec_client
+                .netns()
+                .exec(test_namespace, &[test_binary, "5".into()])
+                .await
+                .unwrap();
+            if let Some(Ok(next_line)) = console_stream.next().await {
                 pid_sender.send(next_line.parse().unwrap()).unwrap();
-                break;
             }
         });
 
@@ -227,17 +232,20 @@ mod tests {
 
         let (pid_sender, pid_receiver) = channel::<u32>();
         let manifest_path = env::var("CARGO_MANIFEST_DIR").unwrap();
-        let test_binary = manifest_path + "/target/debug/namespaced_process".into();
+        let test_binary = manifest_path + "/target/debug/namespaced_process";
 
         let client = IpCommand::new().unwrap();
         client.netns().add(test_namespace).await.unwrap();
 
         let exec_client = client.clone();
         tokio::spawn(async move {
-            let mut console_stream = exec_client.netns().exec(test_namespace, &[test_binary, "5".into()]).await.unwrap();
-            while let Some(Ok(next_line)) = console_stream.next().await {
+            let mut console_stream = exec_client
+                .netns()
+                .exec(test_namespace, &[test_binary, "5".into()])
+                .await
+                .unwrap();
+            if let Some(Ok(next_line)) = console_stream.next().await {
                 pid_sender.send(next_line.parse().unwrap()).unwrap();
-                break;
             }
         });
 

@@ -48,6 +48,9 @@ pub enum Error {
     #[snafu(display("Command not found in PATH"))]
     CommandNotFoundError {},
 
+    #[snafu(display("Command options error: {}", source))]
+    CommandOptionsSerializationError { source: serde_command_opts::Error },
+
     #[snafu(display("Ip command timed out: {}", source))]
     CommandTimeoutError { source: tokio::time::Elapsed },
 

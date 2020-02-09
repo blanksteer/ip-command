@@ -13,11 +13,11 @@ A Rust wrapper around the Linux ip(8) command. Powered by Tokio with full async/
 ## Status
 
 The iproute2 tools have a vast collection of knobs and dials, this project while providing a skeleton does not yet
-support every feature from the underlying tools. Over time this feature coverage is expected to improve.
+support every feature from the underlying tools. Over time this coverage is expected to improve.
 
 ### Feature Coverage
 
-- [ ] Network devices (link).
+- [x] Network devices (link).
 - [ ] Protocol address of device (addr).
 - [ ] Address labels (addrlabel).
 - [ ] Routing table entries (route).
@@ -39,5 +39,4 @@ support every feature from the underlying tools. Over time this feature coverage
 
 ### Upcoming Features
 
-* Network devices.
 * Protocol addresses.
