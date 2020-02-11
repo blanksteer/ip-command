@@ -6,6 +6,7 @@ description = "A Rust wrapper around the Linux ip(8) command. Show / manipulate 
 repository = "https://github.com/fsyncd/ip-command.git"
 license = "Apache-2.0"
 edition = "2018"
+build = "build.rs"
 
 [dependencies]
 futures = "0.3.1"

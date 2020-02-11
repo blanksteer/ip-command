@@ -2,3 +2,4 @@
 /target
 **/*.rs.bk
 *.iml
+src/command/test_fixture/xdp_test.o

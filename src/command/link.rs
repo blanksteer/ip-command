@@ -1,6 +1,5 @@
 /*
  * Copyright 2020 fsyncd, Berlin, Germany.
- * Additional material, copyright of the containerd authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -335,27 +334,41 @@ pub struct LinkShowConfiguration {
 }
 
 #[derive(Debug, Clone, Deserialize)]
+pub struct ExpressDataPathProgram {
+    pub id: u32,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct ExpressDataPath {
+    pub mode: u32,
+    #[serde(rename = "prog")]
+    pub program: Option<ExpressDataPathProgram>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
 pub struct Link {
     #[serde(rename = "ifindex")]
-    interface_index: u32,
+    pub interface_index: u32,
     #[serde(rename = "ifname")]
-    name: String,
+    pub name: String,
     #[serde(rename = "flags")]
-    flags: Vec<String>,
-    mtu: u32,
+    pub flags: Vec<String>,
+    pub mtu: u32,
     #[serde(rename = "qdisc")]
-    queueing_discipline: String,
+    pub queueing_discipline: String,
     #[serde(rename = "operstate")]
-    state: String,
+    pub state: String,
     #[serde(rename = "linkmode")]
-    link_mode: Option<String>,
+    pub link_mode: Option<String>,
     #[serde(rename = "group")]
-    group: Option<String>,
+    pub group: Option<String>,
     #[serde(rename = "txqlen")]
-    transmit_queue_length: Option<u32>,
-    link_type: Option<String>,
-    address: Option<String>,
-    broadcast: Option<String>,
+    pub transmit_queue_length: Option<u32>,
+    pub link_type: Option<String>,
+    pub address: Option<String>,
+    pub broadcast: Option<String>,
+    #[serde(rename = "xdp")]
+    pub express_data_path: Option<ExpressDataPath>,
 }
 
 #[derive(Clone)]
@@ -606,5 +619,54 @@ mod tests {
         assert_eq!(link[0].address, Some("02:00:00:00:01:01".into()));
         assert_eq!(link[0].broadcast, Some("ff:ff:ff:ff:ff:ff".into()));
         assert_eq!(link[0].mtu, 1400);
+    }
+
+    #[tokio::test]
+    async fn test_set_xdp() {
+        let link_name = "test3";
+
+        let client = IpCommand::new().unwrap();
+        client
+            .link()
+            .add(LinkAddConfiguration {
+                name: link_name.into(),
+                link_type: "dummy".into(),
+                ..Default::default()
+            })
+            .await
+            .unwrap();
+
+        let configuration = LinkSetConfiguration {
+            device: LinkDeviceOrGroup::Device(link_name.into()),
+            state: Some(LinkStatus::Up),
+            express_data_path: Some(ExpressDataPathConfiguration::Object {
+                variant: ExpressDataPathVariant::Default,
+                path: "src/command/test_fixture/xdp_test.o".into(),
+                section_name: Some("xdp".into()),
+                verbose: false
+            }),
+            ..Default::default()
+        };
+
+        client.link().set(configuration).await.unwrap();
+
+        let link = client.link()
+            .show(Some(LinkShowConfiguration {
+                device: LinkDeviceOrGroup::Device(link_name.into()),
+                ..Default::default()
+            }))
+            .await
+            .unwrap();
+
+        client.link()
+            .delete(LinkDeleteConfiguration {
+                device: LinkDeviceOrGroup::Device(link_name.into()),
+                link_type: "dummy".into(),
+            })
+            .await
+            .unwrap();
+
+        assert_eq!(link.len(), 1);
+        assert!(link[0].express_data_path.is_some());
     }
 }
