@@ -35,8 +35,10 @@ use tokio::process::Command;
 use tokio::stream::StreamExt;
 use tokio::time::timeout;
 
+/// Various ip(8) subcommands.
 pub mod command;
 
+/// Errors produced by the ip(8) command client.
 #[derive(Debug, Snafu)]
 pub enum Error {
     #[snafu(display("Ip command error: {}", source))]
@@ -61,6 +63,7 @@ pub enum Error {
     SpawnError { source: io::Error },
 }
 
+/// Ip(8) command client.
 #[derive(Clone)]
 pub struct IpCommand {
     command: PathBuf,
