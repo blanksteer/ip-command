@@ -1,6 +1,6 @@
+use std::env;
 use std::path::PathBuf;
 use std::process::Command;
-use std::env;
 
 fn main() {
     if let Some(clang) = executable_path("clang") {

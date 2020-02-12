@@ -18,7 +18,7 @@ support every feature from the underlying tools. Over time this coverage is expe
 ### Feature Coverage
 
 - [x] Network devices (link).
-- [ ] Protocol address of device (addr).
+- [x] Protocol address of device (addr).
 - [ ] Address labels (addrlabel).
 - [ ] Routing table entries (route).
 - [ ] Routing policy rules (rule).
@@ -39,4 +39,4 @@ support every feature from the underlying tools. Over time this coverage is expe
 
 ### Upcoming Features
 
-* Protocol addresses.
+*TBD*

@@ -20,9 +20,9 @@ use snafu::ResultExt;
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct Namespace {
-    name: String,
+    pub name: String,
     #[serde(alias = "id", alias = "nsid")]
-    id: Option<u32>,
+    pub id: Option<u32>,
 }
 
 #[derive(Clone)]
@@ -39,7 +39,7 @@ impl<'l> IpNetNamespaceCommand<'l> {
     pub async fn list(&self) -> Result<Vec<Namespace>, Error> {
         let output = self
             .ip_command
-            .command(&["netns".into(), "list".into()], false)
+            .command(&["netns".into(), "list".into()], false, None)
             .await?;
         Ok(serde_json::from_str(&output).context(JsonDeserializationError {})?)
     }
@@ -50,6 +50,7 @@ impl<'l> IpNetNamespaceCommand<'l> {
             .command(
                 &["netns".into(), "add".into(), network_namespace_name.into()],
                 false,
+                None,
             )
             .await
             .map(|_| ())
@@ -61,6 +62,7 @@ impl<'l> IpNetNamespaceCommand<'l> {
             .command(
                 &["netns".into(), "del".into(), network_namespace_name.into()],
                 false,
+                None,
             )
             .await
             .map(|_| ())
@@ -84,6 +86,7 @@ impl<'l> IpNetNamespaceCommand<'l> {
                     network_namespace_id,
                 ],
                 false,
+                None,
             )
             .await
             .map(|_| ())
@@ -95,6 +98,7 @@ impl<'l> IpNetNamespaceCommand<'l> {
             .command(
                 &["netns".into(), "identify".into(), format!("{}", process_id)],
                 false,
+                None,
             )
             .await
             .map(|result| result.trim().into())
@@ -107,6 +111,7 @@ impl<'l> IpNetNamespaceCommand<'l> {
             .command(
                 &["netns".into(), "pids".into(), network_namespace_name.into()],
                 false,
+                None,
             )
             .await?;
         Ok(Vec::from_iter(

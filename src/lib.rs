@@ -28,6 +28,7 @@ use std::process::Stdio;
 use std::time::Duration;
 use std::{env, io};
 use tokio::io::AsyncBufReadExt;
+use tokio::io::AsyncWriteExt;
 use tokio::io::BufReader;
 use tokio::process::Child;
 use tokio::process::Command;
@@ -79,7 +80,7 @@ impl IpCommand {
 
     /// Return the current version of the ip(8) command.
     pub async fn version(&self) -> Result<String, Error> {
-        self.command(&["-Version".into()], false).await
+        self.command(&["-Version".into()], false, None).await
     }
 
     /// Create a new ip(8) command client for the specified network namespace.
@@ -188,35 +189,54 @@ impl IpCommand {
         &self,
         args: &[String],
         combined_output: bool,
+        stdin_buffer: Option<Vec<u8>>,
     ) -> Result<String, Error> {
+        Ok(String::from_utf8(
+            self.command_with_raw_output(args, combined_output, stdin_buffer)
+                .await?,
+        )
+        .unwrap())
+    }
+
+    pub(crate) async fn command_with_raw_output(
+        &self,
+        args: &[String],
+        combined_output: bool,
+        stdin_buffer: Option<Vec<u8>>,
+    ) -> Result<Vec<u8>, Error> {
         let args = self.concat_args(args)?;
-        let process = Command::new(&self.command)
+        let mut process = Command::new(&self.command)
             .args(args)
-            .stdin(Stdio::null())
+            .stdin(Stdio::piped())
             .stdout(Stdio::piped())
             .stderr(Stdio::piped())
             .spawn()
             .context(SpawnError {})?;
+
+        if let Some(stdin_buffer) = stdin_buffer {
+            let mut stdin = process.stdin.take().unwrap();
+            stdin.write_all(&stdin_buffer[..]).await.unwrap();
+        }
 
         let result = timeout(self.timeout, process.wait_with_output())
             .await
             .context(CommandTimeoutError {})?
             .context(CommandError {})?;
 
-        let stdout = String::from_utf8(result.stdout.clone()).unwrap();
-        let stderr = String::from_utf8(result.stderr.clone()).unwrap();
+        let mut stdout = result.stdout.clone();
+        let mut stderr = result.stderr.clone();
         ensure!(
             result.status.success(),
             CommandFailedError {
-                stdout: stdout,
-                stderr: stderr
+                stdout: String::from_utf8(stdout).unwrap(),
+                stderr: String::from_utf8(stderr).unwrap()
             }
         );
 
         Ok(if combined_output {
-            let mut combined = String::new();
-            combined.push_str(&stdout);
-            combined.push_str(&stderr);
+            let mut combined = Vec::new();
+            combined.append(&mut stdout);
+            combined.append(&mut stderr);
             combined
         } else {
             stdout

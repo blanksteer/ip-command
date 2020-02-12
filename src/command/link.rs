@@ -24,36 +24,36 @@ use snafu::ResultExt;
 #[derive(Clone, Debug, Default, Serialize)]
 pub struct LinkAddConfiguration {
     /// Name of the device.
-    name: String,
+    pub name: String,
     /// The physical device to operate on.
     #[serde(rename = "link")]
-    device: Option<String>,
+    pub device: Option<String>,
     /// Transmit queue length of the device.
     #[serde(rename = "txqueuelen")]
-    transmit_queue_length: Option<u32>,
+    pub transmit_queue_length: Option<u32>,
     /// Station address of the device.
-    address: Option<String>,
+    pub address: Option<String>,
     /// Link layer broadcast address.
-    broadcast: Option<String>,
+    pub broadcast: Option<String>,
     /// Maximum transmission unit for the device.
-    mtu: Option<u32>,
+    pub mtu: Option<u32>,
     /// Desired index of the device.
-    index: Option<u32>,
+    pub index: Option<u32>,
     /// Number of transmit queues for device.
     #[serde(rename = "numtxqueues")]
-    number_transmit_queues: Option<u32>,
+    pub number_transmit_queues: Option<u32>,
     /// Number of receive queues for device.
     #[serde(rename = "numrxqueues")]
-    number_receive_queues: Option<u32>,
+    pub number_receive_queues: Option<u32>,
     /// Maximum size of a Generic Segment Offload packet the device should accept.
     #[serde(rename = "gso_max_size")]
-    gso_maximum_size: Option<u32>,
+    pub gso_maximum_size: Option<u32>,
     /// Maximum number of a Generic Segment Offload segments the device should accept.
     #[serde(rename = "gso_max_segs")]
-    gso_maximum_segments: Option<u32>,
+    pub gso_maximum_segments: Option<u32>,
     /// Type of the device.
     #[serde(rename = "type")]
-    link_type: String,
+    pub link_type: String,
 }
 
 #[derive(Clone, Debug)]
@@ -95,10 +95,10 @@ impl Serialize for LinkDeviceOrGroup {
 /// Virtual link delete device configuration.
 #[derive(Clone, Debug, Default, Serialize)]
 pub struct LinkDeleteConfiguration {
-    device: LinkDeviceOrGroup,
+    pub device: LinkDeviceOrGroup,
     /// Type of the device.
     #[serde(rename = "type")]
-    link_type: String,
+    pub link_type: String,
 }
 
 #[derive(Clone, Debug)]
@@ -264,73 +264,72 @@ impl Serialize for ExpressDataPathConfiguration {
 #[derive(Debug, Clone, Default, Serialize)]
 pub struct LinkSetConfiguration {
     /// The device or group to operate on.
-    device: LinkDeviceOrGroup,
+    pub device: LinkDeviceOrGroup,
     /// Change the state of the device.
-    state: Option<LinkStatus>,
+    pub state: Option<LinkStatus>,
     /// Enable or disable the use of the Address Resolution Protocol.
-    arp: Option<bool>,
+    pub arp: Option<bool>,
     /// Enable or disable support for multicast packets.
-    multicast: Option<bool>,
+    pub multicast: Option<bool>,
     /// Enable or disable the reception of all hardware multicast packets.
     #[serde(rename = "allmulticast")]
-    all_multicast: Option<bool>,
+    pub all_multicast: Option<bool>,
     /// Enable or disable promiscuous listening mode.
     #[serde(rename = "promisc")]
-    promiscuous: Option<bool>,
+    pub promiscuous: Option<bool>,
     /// Indicate that a protocol error has been detected.
     #[serde(rename = "protodown")]
-    protocol_down: Option<bool>,
+    pub protocol_down: Option<bool>,
     /// Enable or disable the use of trailer encapsulations.
-    trailers: Option<bool>,
+    pub trailers: Option<bool>,
     /// Transmit queue length of the device.
     #[serde(rename = "txqueuelen")]
-    transmit_queue_length: Option<u32>,
+    pub transmit_queue_length: Option<u32>,
     /// Change the name of the device.
     #[serde(rename = "name")]
-    new_name: Option<String>,
+    pub new_name: Option<String>,
     /// Station address of the device.
-    address: Option<String>,
+    pub address: Option<String>,
     /// Link layer broadcast address.
-    broadcast: Option<String>,
+    pub broadcast: Option<String>,
     /// Maximum transmission unit for the device.
-    mtu: Option<u32>,
+    pub mtu: Option<u32>,
     /// Move the device to the supplied network namespace or pid.
     #[serde(rename = "netns")]
-    namespace: Option<String>,
+    pub namespace: Option<String>,
     /// Set peer netnsid for a cross-netns interface.
     #[serde(rename = "link-netnsid")]
-    link_network_namespace_id: Option<u32>,
+    pub link_network_namespace_id: Option<u32>,
     /// Set / unset the master device of the device.
-    master: Option<MasterSetConfiguration>,
+    pub master: Option<MasterSetConfiguration>,
     /// Enslave to virtual routing and forwarding master.
     #[serde(rename = "vrf")]
-    vrf_master: Option<String>,
+    pub vrf_master: Option<String>,
     /// IPv6 address generation mode.
     #[serde(rename = "addrgenmode")]
-    address_generation_mode: Option<String>,
+    pub address_generation_mode: Option<String>,
     /// Set (or unset) a BPF program to run on every packet at driver level.
-    express_data_path: Option<ExpressDataPathConfiguration>,
+    pub express_data_path: Option<ExpressDataPathConfiguration>,
     /// Type of the device.
     #[serde(rename = "type")]
-    link_type: Option<String>,
+    pub link_type: Option<String>,
     // Any type specific arguments: currently not supported.
 }
 
 #[derive(Clone, Debug, Default, Serialize)]
 pub struct LinkShowConfiguration {
     /// The network device to show.
-    device: LinkDeviceOrGroup,
+    pub device: LinkDeviceOrGroup,
     /// Only display running interfaces.
-    #[serde(skip_serializing)]
-    state: Option<LinkStatus>,
+    pub state: Option<LinkStatus>,
     /// Master device which enslaves devices to show.
-    master: Option<String>,
+    pub master: Option<String>,
     /// The VRF which enslaves devices to show.
     #[serde(rename = "vrf")]
-    virtual_function_device: Option<String>,
+    pub virtual_function_device: Option<String>,
     /// The type of devices to show.
     #[serde(rename = "type")]
-    link_type: Option<String>,
+    pub link_type: Option<String>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -338,6 +337,7 @@ pub struct ExpressDataPathProgram {
     pub id: u32,
 }
 
+/// The returned express data path program structure.
 #[derive(Debug, Clone, Deserialize)]
 pub struct ExpressDataPath {
     pub mode: u32,
@@ -345,6 +345,7 @@ pub struct ExpressDataPath {
     pub program: Option<ExpressDataPathProgram>,
 }
 
+/// The returned link structure.
 #[derive(Debug, Clone, Deserialize)]
 pub struct Link {
     #[serde(rename = "ifindex")]
@@ -389,7 +390,10 @@ impl<'l> IpLinkCommand<'l> {
                 .into_args(&configuration)
                 .context(CommandOptionsSerializationError {})?,
         );
-        self.ip_command.command(&args, false).await.map(|_| ())
+        self.ip_command
+            .command(&args, false, None)
+            .await
+            .map(|_| ())
     }
 
     /// Delete virtual link.
@@ -400,7 +404,10 @@ impl<'l> IpLinkCommand<'l> {
                 .into_args(&configuration)
                 .context(CommandOptionsSerializationError {})?,
         );
-        self.ip_command.command(&args, false).await.map(|_| ())
+        self.ip_command
+            .command(&args, false, None)
+            .await
+            .map(|_| ())
     }
 
     /// Change device attributes.
@@ -411,7 +418,10 @@ impl<'l> IpLinkCommand<'l> {
                 .into_args(&configuration)
                 .context(CommandOptionsSerializationError {})?,
         );
-        self.ip_command.command(&args, false).await.map(|_| ())
+        self.ip_command
+            .command(&args, false, None)
+            .await
+            .map(|_| ())
     }
 
     /// Display device attributes.
@@ -427,7 +437,7 @@ impl<'l> IpLinkCommand<'l> {
                     .context(CommandOptionsSerializationError {})?,
             );
         }
-        let output = self.ip_command.command(&args, false).await?;
+        let output = self.ip_command.command(&args, false, None).await?;
         Ok(serde_json::from_str(&output).context(JsonDeserializationError {})?)
     }
 
@@ -452,7 +462,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_add() {
-        let link_name = "test0";
+        let link_name = "test_link0";
 
         let configuration = LinkAddConfiguration {
             name: link_name.into(),
@@ -497,7 +507,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_show_and_delete() {
-        let link_name = "test1";
+        let link_name = "test_link1";
         let client = IpCommand::new().unwrap();
 
         client
@@ -544,7 +554,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_set_dummy() {
-        let link_name = "test2";
+        let link_name = "test_link2";
         let test_namespace = "ip-command-test-link-set-dummy";
 
         let client = IpCommand::new().unwrap();
@@ -623,7 +633,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_set_xdp() {
-        let link_name = "test3";
+        let link_name = "test_link3";
 
         let client = IpCommand::new().unwrap();
         client
@@ -643,14 +653,15 @@ mod tests {
                 variant: ExpressDataPathVariant::Default,
                 path: "src/command/test_fixture/xdp_test.o".into(),
                 section_name: Some("xdp".into()),
-                verbose: false
+                verbose: false,
             }),
             ..Default::default()
         };
 
         client.link().set(configuration).await.unwrap();
 
-        let link = client.link()
+        let link = client
+            .link()
             .show(Some(LinkShowConfiguration {
                 device: LinkDeviceOrGroup::Device(link_name.into()),
                 ..Default::default()
@@ -658,7 +669,8 @@ mod tests {
             .await
             .unwrap();
 
-        client.link()
+        client
+            .link()
             .delete(LinkDeleteConfiguration {
                 device: LinkDeviceOrGroup::Device(link_name.into()),
                 link_type: "dummy".into(),
